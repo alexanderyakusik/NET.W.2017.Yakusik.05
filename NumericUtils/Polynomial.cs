@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace NumericUtils
@@ -47,6 +46,16 @@ namespace NumericUtils
                 return false;
             }
 
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals(obj as Polynomial);
         }
 
@@ -62,7 +71,30 @@ namespace NumericUtils
                 return false;
             }
 
-            return coefficients.SequenceEqual(polynomial.coefficients);
+            if (ReferenceEquals(this, polynomial))
+            {
+                return true;
+            }
+
+            if (GetType() != polynomial.GetType())
+            {
+                return false;
+            }
+
+            if (coefficients.Length != polynomial.coefficients.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < coefficients.Length; i++)
+            {
+                if (coefficients[i] - polynomial.coefficients[i] >= epsilon)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -207,14 +239,18 @@ namespace NumericUtils
 
         #region Private fields
 
-        private const int HASH_INITIAL_SEED = 13;
-        private const int HASH_ADDITIONAL_SEED = 7;
+        private static double epsilon;
 
         private double[] coefficients;
 
         #endregion
 
         #region Private methods
+
+        static Polynomial()
+        {
+            epsilon = 1E-6;
+        }
 
         private static void ValidateNullPolynomial(Polynomial polynomial)
         {
