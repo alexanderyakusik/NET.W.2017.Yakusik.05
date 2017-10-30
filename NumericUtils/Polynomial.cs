@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -69,7 +71,7 @@ namespace NumericUtils
         /// <returns>Polynomial's hash code.</returns>
         public override int GetHashCode()
         {
-            return coefficients.GetHashCode();
+            return ((IStructuralEquatable)coefficients).GetHashCode(EqualityComparer<double>.Default);
         }
 
         /// <summary>
@@ -78,8 +80,13 @@ namespace NumericUtils
         /// <param name="first">Augend</param>
         /// <param name="second">Addend</param>
         /// <returns>Sum</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial operator +(Polynomial first, Polynomial second)
         {
+            ValidateNullPolynomial(first);
+            ValidateNullPolynomial(second);
+
             return new Polynomial(CalculateAdditiveOperation(first, second, (num1, num2) => num1 + num2));
         }
 
@@ -89,6 +96,8 @@ namespace NumericUtils
         /// <param name="first">Augend</param>
         /// <param name="second">Addend</param>
         /// <returns>Sum</returns>
+        /// /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial Add(Polynomial first, Polynomial second)
         {
             return first + second;
@@ -100,8 +109,13 @@ namespace NumericUtils
         /// <param name="minuend">Minuend</param>
         /// <param name="subtrahend">Subtrahend</param>
         /// <returns>Difference</returns>
+        /// /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial operator -(Polynomial minuend, Polynomial subtrahend)
         {
+            ValidateNullPolynomial(minuend);
+            ValidateNullPolynomial(subtrahend);
+
             return new Polynomial(CalculateAdditiveOperation(minuend, subtrahend, (num1, num2) => num1 - num2));
         }
 
@@ -111,19 +125,26 @@ namespace NumericUtils
         /// <param name="minuend">Minuend</param>
         /// <param name="subtrahend">Subtrahend</param>
         /// <returns>Difference</returns>
+        /// /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial Subtract(Polynomial minuend, Polynomial subtrahend)
         {
             return minuend - subtrahend;
         }
-        
+
         /// <summary>
         /// Performs multiplication operation of two polynomials.
         /// </summary>
         /// <param name="first">Multiplicand</param>
         /// <param name="second">Multiplier</param>
         /// <returns>Product</returns>
+        /// /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial operator *(Polynomial first, Polynomial second)
         {
+            ValidateNullPolynomial(first);
+            ValidateNullPolynomial(second);
+
             double[] resultCoefficients = new double[first.coefficients.Length + second.coefficients.Length - 1];
 
             for (int i = 0; i < first.coefficients.Length; i++)
@@ -143,6 +164,8 @@ namespace NumericUtils
         /// <param name="first">Multiplicand</param>
         /// <param name="second">Multiplier</param>
         /// <returns>Product</returns>
+        /// /// <exception cref="ArgumentNullException"><paramref name="first"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="second"/> is null.</exception>
         public static Polynomial Multiply(Polynomial first, Polynomial second)
         {
             return first * second;
@@ -184,11 +207,22 @@ namespace NumericUtils
 
         #region Private fields
 
+        private const int HASH_INITIAL_SEED = 13;
+        private const int HASH_ADDITIONAL_SEED = 7;
+
         private double[] coefficients;
 
         #endregion
 
         #region Private methods
+
+        private static void ValidateNullPolynomial(Polynomial polynomial)
+        {
+            if (polynomial == null)
+            {
+                throw new ArgumentNullException();
+            }
+        }
 
         private static void ValidateNullOrEmptyArray(double[] array)
         {
@@ -261,11 +295,6 @@ namespace NumericUtils
         private double[] GetCoefficientsWithRemovedZeroes(double[] coefficients)
         {
             int nonZeroItemIndex = Array.FindIndex(coefficients, (coefficient) => coefficient != 0.0);
-
-            if (nonZeroItemIndex == 0)
-            {
-                return coefficients;
-            }
 
             double[] newCoefficients = new double[coefficients.Length - nonZeroItemIndex];
             Array.Copy(coefficients, nonZeroItemIndex, newCoefficients, 0, newCoefficients.Length);
