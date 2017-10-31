@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NumericUtils
 {
-    public class Polynomial
+    public sealed class Polynomial
     {
         /// <summary>
         /// Constructor for creating polynomial using <paramref name="coefficients"/>.
