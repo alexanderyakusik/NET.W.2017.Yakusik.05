@@ -332,8 +332,17 @@ namespace NumericUtils
         {
             int nonZeroItemIndex = Array.FindIndex(coefficients, (coefficient) => coefficient != 0.0);
 
-            double[] newCoefficients = new double[coefficients.Length - nonZeroItemIndex];
-            Array.Copy(coefficients, nonZeroItemIndex, newCoefficients, 0, newCoefficients.Length);
+            double[] newCoefficients;
+
+            if (nonZeroItemIndex == -1)
+            {
+                newCoefficients = new double[] { 0 };
+            }
+            else
+            {
+                newCoefficients = new double[coefficients.Length - nonZeroItemIndex];
+                Array.Copy(coefficients, nonZeroItemIndex, newCoefficients, 0, newCoefficients.Length);
+            }
 
             return newCoefficients;
         }

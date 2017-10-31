@@ -114,6 +114,9 @@ namespace NumericUtils.UnitTests
                 yield return new TestCaseData(new double[] { -6, 0, 0, 5, 1 },
                                               new double[] { 1, -25, 8, 0 })
                       .Returns(new Polynomial(new double[] { -6, 1, -25, 13, 1 }));
+                yield return new TestCaseData(new double[] { 3, 4, 0, 1, 0.5 },
+                                              new double[] { -3, -4, 0, -1, -0.5 })
+                      .Returns(new Polynomial(new double[] { 0 }));
             }
         }
 
